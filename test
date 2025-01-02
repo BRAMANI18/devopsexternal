@@ -1,0 +1,1065 @@
+Skip to main content
+Stack Overflow
+About
+Products
+OverflowAI
+Search…
+Home
+Questions
+Tags
+Users
+Companies
+Labs
+Jobs
+Discussions
+Collectives
+Communities for your favorite technologies. Explore all Collectives
+
+Teams
+
+Ask questions, find answers and collaborate at work with Stack Overflow for Teams.
+
+ 
+Git push results in "Authentication Failed"
+Asked 11 years, 5 months ago
+Modified 1 month ago
+Viewed 2.5m times
+
+Report this ad
+1242
+
+I have been using GitHub for a little while, and I have been fine with git add, git commit, and git push, so far without any problems. Suddenly I am having an error that says:
+
+fatal: Authentication Failed
+
+In the terminal I cloned a repository, worked on a file and then I used git add to add the file to the commit log and when I did git commit, it worked fine. Finally, git push asks for username and password. I put those in correctly and every time I do this, it says the same error.
+
+What is the cause of this problem and how can I fix it?
+
+The contents of .git/config are:
+
+[core]
+        repositoryformatversion = 0
+        filemode = true
+        bare = false
+        logallrefupdates = true
+[remote "origin"]
+        url = http://www.github.com/######/Random-Python-Tests
+        fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+        remote = origin
+        merge = refs/heads/master
+[user]
+        name = #####
+        email = ############
+gitauthenticationgithub
+Share
+Improve this question
+Follow
+edited Oct 25, 2023 at 10:09
+starball's user avatar
+starball
+48.7k2828 gold badges189189 silver badges857857 bronze badges
+asked Jul 15, 2013 at 16:34
+zkirkland's user avatar
+zkirkland
+12.8k33 gold badges2020 silver badges1818 bronze badges
+what is your username on github and what are the contents of .git/config? – 
+mnagel
+ CommentedJul 15, 2013 at 16:38
+add it to the question, comments dont cope with long text – 
+mnagel
+ CommentedJul 15, 2013 at 16:40
+Yeah sorry, I started the comment out of habit then changed it. – 
+zkirkland
+ CommentedJul 15, 2013 at 16:45
+Your url doesn't look right. I think it should start with https://, not http://. – 
+John Szakmeister
+ CommentedJul 15, 2013 at 17:57
+1
+@Amey Good point. This actually comes from my answer: stackoverflow.com/a/62870126/6309 – 
+VonC
+ CommentedNov 16, 2021 at 7:03
+Show 9 more comments
+55 Answers
+Sorted by:
+
+Highest score (default)
+1
+2
+Next
+1816
+
+If you enabled two-factor authentication in your GitHub account you won't be able to push via HTTPS using your accounts password. Instead you need to generate a personal access token. This can be done in the application settings of your GitHub account. Using this token as your password should allow you to push to your remote repository via HTTPS. Use your username as usual.
+
+Creating a personal access token
+
+You may also need to update the origin for your repository if it is set to HTTPS. Do this to switch to SSH:
+
+git remote -v
+git remote set-url origin git@github.com:USERNAME/REPONAME.git
+Share
+Improve this answer
+Follow
+edited Dec 21, 2021 at 16:04
+basZero's user avatar
+basZero
+4,25499 gold badges5353 silver badges8989 bronze badges
+answered Jan 9, 2014 at 17:59
+rc0r's user avatar
+rc0r
+19.3k11 gold badge1818 silver badges2020 bronze badges
+11
+Indeed. +1. I present PAT here stackoverflow.com/a/19223896/6309 and detail the process there: stackoverflow.com/a/18607931/6309 – 
+VonC
+ CommentedJan 9, 2014 at 18:54 
+4
+I needed to freshly generate my rsa keys for normal Git operations to work after enabling 2FA. – 
+R11G
+ CommentedJul 1, 2015 at 13:42
+8
+Thank you! Just had this error and this helped, just to point out. Once you've created your personal access token you copy that then when your pushing the repo, it'll ask for your username and password. Paste the Access Token in the Password – 
+pourmesomecode
+ CommentedOct 21, 2015 at 14:18
+204
+you can also do git remote add origin https://username:access-token@github.com/username/repo.git to store your personal access token. – 
+mailmindlin
+ CommentedFeb 4, 2016 at 0:48
+7
+For me, all I had to do was enable SSH authentication from my local machine on my GitHub account, and then switch to the ssh git remote address; help.github.com/articles/changing-a-remote-s-url – 
+user5359531
+ CommentedJun 23, 2017 at 2:52
+Show 15 more comments
+
+Report this ad
+1029
+
+On Windows, try the below steps to edit or remove the saved credentials:
+
+Click Start
+Type: Credential Manager (on Windows 10, this is under "Start → Settings". Then search for "Credential Manager")
+See the Windows Credentials Manager shortcut and double-click it to open the application.
+Once the application is open, click on the Windows Credentials tab.
+Locate the credentials that you want to remove/update. They will start with "git:" and might begin with "ada:"
+Click on the credential entry. It will open a details view of the entry.
+Click Edit or Remove as required and confirm.
+Later rinse and repeat as necessary.
+Enter image description here
+
+Share
+Improve this answer
+Follow
+edited Aug 8, 2022 at 2:58
+answered May 1, 2018 at 6:41
+Pradeep's user avatar
+Pradeep
+12.7k33 gold badges2121 silver badges2626 bronze badges
+7
+In my case it is not in "Windows Credentials" but is on "Generic Credentials". Remove the credential do the trick. – 
+Toni Gamez
+ CommentedJun 6, 2018 at 8:34
+17
+You can open the above window by (windows + R) -> "control /name Microsoft.CredentialManager" – 
+Sufiyan Ansari
+ CommentedNov 15, 2018 at 12:00 
+4
+My employer set windows authentication to Git Hub, so every time I changed my windows credentials I had to update it for source control. Your answer worked. – 
+shary.sharath
+ CommentedOct 14, 2019 at 9:32
+3
+Fantastic answer. We maintain an internal BitBucket repository, where each of our account credentials are authenticated to our organization. Recently all of my repositories became unavailable for pushing code changes. While I had been able to change credentials on a case per case basis, I really did not want to do this for every project. @Pradeep's approach allowed me to solve the underlying cause, which was more than simply a password change. Our organization recently changed the name of the internal domain, so by editing the credentials centrally, I was able to fix all of my projects. – 
+Michael M
+ CommentedNov 21, 2019 at 17:03 
+2
+This should be the selected answer. – 
+Cyber Knight
+ CommentedOct 20, 2021 at 13:07
+Show 6 more comments
+193
+
+Maybe you have changed the password recently for you Git account. You could try the git push line with the -u option:
+
+git push -u origin branch_name_that_you_want_to_push
+After executing the above command, it will ask for a password. Provide your updated password.
+
+Share
+Improve this answer
+Follow
+edited Dec 11, 2021 at 20:22
+Peter Mortensen's user avatar
+Peter Mortensen
+31.6k2222 gold badges109109 silver badges133133 bronze badges
+answered May 10, 2017 at 7:44
+Shankar Cheerala's user avatar
+Shankar Cheerala
+2,00711 gold badge1313 silver badges1111 bronze badges
+this works, which my environment need be https only – 
+BMW
+ CommentedAug 24, 2017 at 2:12
+13
+Certainly a lot easier than most answers. (And changing passwords should be the most common reason to get an authentication error ;-) ) – 
+Michel
+ CommentedAug 11, 2018 at 10:00
+2
+if you are experiencing this on a existing clone - then just do a git push -u  – 
+Ajay Chebbi
+ CommentedJan 31, 2019 at 12:42 
+I deleted my credentials from Windows Credential Manager and this command triggered the login dialog. Thanks! – 
+Przemek Pobuta
+ CommentedAug 11, 2021 at 6:01
+1
+This solution is no longer valid: Git will notify with "Support for password authentication was removed on August 13, 2021. Please use a personal access token instead." and recommend to follow this link: github.blog/… – 
+Salim Mazari Boufares
+ CommentedFeb 18, 2022 at 15:12 
+Show 1 more comment
+
+Report this ad
+139
+
+It happens if you change your login or password of git service account (Git). You need to change it in Windows Credentials Manager too. type "Credential Manager" in Windows Search menu open it.
+
+Windows Credentials Manager->Windows Credential and under Generic Credentials edit your git password.
+
+Share
+Improve this answer
+Follow
+answered Oct 14, 2019 at 7:04
+Atif AbbAsi's user avatar
+Atif AbbAsi
+6,01777 gold badges2929 silver badges4848 bronze badges
+10
+This saved me when working with GitLab (when pretty much nothing else helped). Thanks! – 
+John Humphreys
+ CommentedNov 3, 2019 at 0:19
+5
+I had never heard of this windows credentials manager.... Thanks ! – 
+Sam
+ CommentedDec 17, 2019 at 9:08
+1
+I gave wrong credentials when Git prompted me for user id and password while pushing new files to remote repository. When I ran push command again git did not prompt me for credentials but instead it was only throwing authentication failed error. I realised after reading this answer that git uses credentials stored in credential manager and that should be the reason git does not prompt for password everytime we push into remote respository. I deleted the git password in credential manager after which git again prompted me for user id and password. – 
+Jchenna
+ CommentedJan 9, 2020 at 4:00 
+1
+You can open the above window by (windows + R) -> "control /name Microsoft.CredentialManager" – 
+Atif AbbAsi
+ CommentedDec 12, 2020 at 21:09
+2
+Simplest and fastest fix IMO. – 
+stevec
+ CommentedApr 22, 2021 at 0:26
+Show 1 more comment
+121
+
+Basically my credential was expired, and I was facing the issue.
+
+The following two commands helped me:
+
+git config --global --unset credential.helper
+
+git config credential.helper store
+It will ask you for credentials next time when you try to push.
+
+Follow the below guidelines for more details for secured and unsecured storage of the user name and passwords:
+
+git-credential-store
+
+git-credential-cache
+
+Share
+Improve this answer
+Follow
+edited Dec 11, 2021 at 20:34
+Peter Mortensen's user avatar
+Peter Mortensen
+31.6k2222 gold badges109109 silver badges133133 bronze badges
+answered Apr 30, 2018 at 18:07
+Jems's user avatar
+Jems
+1,23911 gold badge88 silver badges66 bronze badges
+4
+This works great on Mac after a password expiration. – 
+devinbost
+ CommentedAug 11, 2020 at 23:24
+I did that and it still does not prompt for the credentials. I also removed the user credentials from Windows password manager. I went through almost all answers here, but didn't help any suggestions? it only works when I put credentials in the address e.g. git push https://<user>:<pwd>@<bitbucketaddress> – 
+essential
+ CommentedSep 24, 2021 at 14:14 
+1
+For me and Windows 10, it worked perfectly. – 
+Karel Macek
+ CommentedOct 14, 2022 at 7:30
+This answer pointed me towards looking into my .gitconfig file, which is what I ended up needing to do. – 
+zcoop98
+ CommentedJun 12, 2023 at 16:02
+Add a comment
+118
+
+On Windows, this worked for me, and it also remembers my credentials:
+
+Run Git Bash
+
+Point to the repository directory
+
+Run git config --global credential.helper wincred
+
+Share
+Improve this answer
+Follow
+edited Dec 11, 2021 at 20:15
+Peter Mortensen's user avatar
+Peter Mortensen
+31.6k2222 gold badges109109 silver badges133133 bronze badges
+answered Jan 4, 2016 at 14:10
+Utukku's user avatar
+Utukku
+1,37511 gold badge1010 silver badges66 bronze badges
+23
+Took me a while to find out what that does -- it uses the Credential Manager in the Windows Control Panel. To stop using it: git config –global credential.helper unset Source, and more details in this answer. – 
+Ian W
+ CommentedJul 26, 2016 at 12:32
+12
+@IanW Do you mean git config --global --unset credential.helper? That's what worked for me in Git Bash. – 
+Ellen Spertus
+ CommentedMay 15, 2017 at 17:51 
+3
+Be careful with this command it will replace the real path to your credential helper with simply "wincred" which apparently not what you need. – 
+amarax
+ CommentedJun 29, 2017 at 10:31
+4
+I ran this command to find out it's not what i wanted, the proper way to unset is git config --global --unset credential.helper. Ultimately, I restored my correct setting with git config credential.helper store. – 
+Omar
+ CommentedNov 30, 2017 at 1:52 
+On a Mac, after answering the web capcha, this worked for me: git config --global credential.helper osxkeychain – 
+Robin Macharg
+ CommentedFeb 6, 2019 at 13:38
+Add a comment
+104
+
+First, you can make sure to use the proper URL:
+
+git remote set-url origin https://github.com/zkirkland/Random-Python-Tests.git
+Then, if it was working before, and if it wasn't asking for your username, it must be because you had stored your credentials (login/password) in a $HOME/.netrc file, as explained here. You can double check those settings, and make sure that your proxy, if you have one, hasn't changed.
+
+Check the output of git config --global credential.helper.
+And make sure the credentials are your GitHub user account, and a PAT (Personal Access token).
+
+You can update your credentials using the Git credential helper, as in here.
+
+If that still doesn't work, you can switch to an SSH URL:
+
+git remote set-url origin git@github.com:zkirkland/Random-Python-Tests.git
+But that means you have published your SSH public key in your Account settings.
+
+For Visual Studio Code specifically, see also "git push: Missing or invalid credentials. fatal: Authentication failed for 'https://github.com/username/repo.git'"
+
+You can unselect the setting git.terminalAuthentication to avoid the error message.
+
+Share
+Improve this answer
+Follow
+edited Mar 23, 2022 at 10:24
+answered Jul 16, 2013 at 8:12
+VonC's user avatar
+VonC
+1.3m559559 gold badges4.7k4.7k silver badges5.6k5.6k bronze badges
+15
+Switching from HTTPS to SSH solved the problem for me. – 
+leymannx
+ CommentedJan 20, 2015 at 11:49
+3
+I had enabled 2-factor authentication for my GH account and switching the remote url to SSH from HTTPS resolved the "authentication failed" issue for me. Makes sense. Thanks! – 
+Walter Roman
+ CommentedFeb 20, 2016 at 18:02 
+1
+This also solved the problem for me. After I switched to two-factor authentication, I set up a public key in my GitHub account. – 
+DryLabRebel
+ CommentedJan 20, 2021 at 19:30
+1
+Having incorrect URL was indeed my issue, I mistakenly changed https:// to git://, while I needed git@github.com:user.repo.git. Strange that git didn't report the issue somehow, just silent hanging – 
+Alexey S. Larionov
+ CommentedJun 2, 2021 at 13:36 
+@AlexeyLarionov Since git:// is a valid (albeit obsolete) protocol, it simply tried and use it, waiting for a remote server to listen on port 9418. – 
+VonC
+ CommentedJun 2, 2021 at 17:37
+Add a comment
+44
+
+On Windows, if you found an authentication error problem when you entered the correct password and username, it's a Git problem. To solve this problem, when you are installing the Git in your machine, uncheck the Enable Git Credential Manager option.
+
+Enter image description here
+
+Share
+Improve this answer
+Follow
+edited Dec 11, 2021 at 20:39
+Peter Mortensen's user avatar
+Peter Mortensen
+31.6k2222 gold badges109109 silver badges133133 bronze badges
+answered Mar 27, 2017 at 6:52
+Hoque MD Zahidul's user avatar
+Hoque MD Zahidul
+11.9k22 gold badges4141 silver badges4242 bronze badges
+1
+I don't find this type of solution. I have re installed the git – 
+Hoque MD Zahidul
+ CommentedMar 14, 2018 at 20:34
+1
+Fixed my trouble too (git was installed, just reinstalled it wich unchecking this : and it's ok !) – 
+manatlan
+ CommentedMay 16, 2018 at 9:49
+2
+I had to check "Use the native Windows Secure Channel library" too. It isn't checked by default. – 
+doptrois
+ CommentedJul 5, 2019 at 15:19
+Reinstalling git works fine for me. Download the newest installer. Enable newest feature of git credential manager during installation. Before you push the repo. A window will pop-up and you will be able to login via browser. – 
+Galih indra
+ CommentedFeb 18, 2021 at 9:49
+Add a comment
+35
+
+I was getting the same error. I tried all the solutions whichever mentioned in this page, but they didn't work. Finally, I found the solution.
+
+These kinds of error comes if sometimes your system password has changed recently anytime. It will try to validate from the old password. So, follow these steps:
+
+Go to Control Panel
+Click on User Accounts
+Under Credentials manager
+Go to Manage Windows Credentials
+Go to Generic Credentials
+Expand the Git server tab
+Click on Remove from vault
+Also, you can click Edit and change your password stored here directly.
+Share
+Improve this answer
+Follow
+edited Dec 11, 2021 at 21:23
+Peter Mortensen's user avatar
+Peter Mortensen
+31.6k2222 gold badges109109 silver badges133133 bronze badges
+answered Jun 10, 2019 at 7:46
+KamalaH's user avatar
+KamalaH
+1,39111 gold badge1414 silver badges2121 bronze badges
+This is an exact duplicate of what user Sherlock posted more than a year prior and deleted 3 minutes before this answer was posted. – 
+Peter Mortensen
+ CommentedDec 11, 2021 at 21:38
+I don't have a Credentials Manager under User Accounts. I am running Manjaro. – 
+Ingo
+ CommentedMar 28, 2022 at 6:43 
+Add a comment
+31
+
+I think that for some reason GitHub is expecting the URL to NOT have subdomain www. When I use (for example)
+
+git remote set-url origin https://www.github.com/name/repo.git
+it gives the following messages:
+
+remote: Anonymous access to name/repo.git denied
+fatal: Authentication failed for https://www.github.com/name/repo.git
+However, if I use
+
+git remote set-url origin https://github.com/name/repo.git
+it works perfectly fine. Doesn't make too much sense to me... but I guess remember not to put www in the remote URL for GitHub repositories.
+
+Also notice the clone URLs provided on the GitHub repository webpage doesn't include the www.
+
+Share
+Improve this answer
+Follow
+edited Jan 24, 2017 at 14:43
+Chei's user avatar
+Chei
+2,15733 gold badges2020 silver badges3333 bronze badges
+answered Jan 28, 2014 at 2:30
+Electo's user avatar
+Electo
+52055 silver badges77 bronze badges
+5
+Not putting "www" on "github.com" works. Since that matters, Github should fix their site so you can't clone using "www". – 
+John Nagle
+ CommentedNov 13, 2014 at 2:36
+1
+Thank you : ) My url was missing the .git, and this comment got me to take a look at it and figure it out. – 
+user1684306
+ CommentedMar 27, 2015 at 2:05
+Add a comment
+25
+
+Before you try everything above, try to git push again, yes it works on me.
+
+Share
+Improve this answer
+Follow
+answered Sep 14, 2020 at 14:13
+Justin Herrera's user avatar
+Justin Herrera
+65366 silver badges1111 bronze badges
+It asks for username and password when you do 'git push' again atleast in my case, enter your credentials and you are good to go – 
+Abhishek P
+ CommentedMar 29, 2021 at 19:05
+You saved my time! Thanks! This worked for me. – 
+Venky
+ CommentedOct 12, 2021 at 5:50
+Yes on Visual Studio code it asks for password when you try again. Thanks for the solution. – 
+SAIR
+ CommentedMay 10, 2023 at 5:19
+Too bad this answer is so low. Definitely the simplest step to take first. Thanks. – 
+Will
+ CommentedNov 1, 2023 at 14:32
+Add a comment
+17
+
+The same error (Windows, Git Bash command line). Using https which should prompt for login credentials but instead errors:
+
+$ git pull origin master
+fatal: Authentication failed for 'https://github.com/frmbelz/my_git_project.git'
+$ git config -l
+...
+credential.helper=manager
+...
+
+$ git config --global --unset credential.helper
+$ git config --system --unset credential.helper
+git pull now prompted for username/password prompts.
+
+Share
+Improve this answer
+Follow
+answered Jul 8, 2021 at 20:53
+frmbelz's user avatar
+frmbelz
+2,5232929 silver badges2828 bronze badges
+I feel compelled to comment because I was starting to lose hope, none of these answers were working for me, but those last two commands ensured git asked me for my new credentials. Thank you. – 
+glhrmv
+ CommentedMar 2, 2022 at 11:01
+Add a comment
+15
+
+I'm not really sure what I did to get this error, but doing:
+
+git remote set-url origin https://...
+didn't work for me. However:
+
+git remote set-url origin git@bitbucket.org:user/repo
+somehow worked.
+
+Share
+Improve this answer
+Follow
+answered Feb 4, 2014 at 19:15
+Kafeaulait's user avatar
+Kafeaulait
+68411 gold badge66 silver badges1414 bronze badges
+7
+You switched from https to ssh – 
+James Wierzba
+ CommentedSep 11, 2015 at 17:24
+It works for me as well. This is not magic, it is because I have stored configuration for ssh access (with a public key configured), which are not picked up for https access (which is user/pass + MFA). – 
+Daniel Dror
+ CommentedMar 3, 2020 at 8:43
+Add a comment
+14
+
+I was adding to Bitbucket linked with Git and had to remove the stored keys, as this was causing the fatal error.
+
+To resolve, I opened the command prompt and ran
+
+ rundll32.exe keymgr.dll, KRShowKeyMgr
+I removed the key that was responsible for signing in and next time I pushed the files to the repo, I was prompted for credentials and entered the correct ones, resulting in a successful push.
+
+Share
+Improve this answer
+Follow
+answered May 13, 2020 at 14:30
+William Humphries's user avatar
+William Humphries
+56811 gold badge1010 silver badges2222 bronze badges
+1
+Perfect! This is a quick and short solution, worked for me in an instant for bitbucket. If this issue repeats after editing the password, remove the logon. New creds for git are prompted when doing a git operation like pull or push. – 
+VinjaNinja
+ CommentedJan 12, 2022 at 15:34 
+Add a comment
+13
+
+I've ran into
+
+git fetch
+
+fatal: Authentication failed for 'http://...."
+after my Windows password had expired and was changed. Multiple fetches, reboot and even reinstall of Git with Windows Credential Manager didn't help.
+
+Surprisingly the right answer is somewhere here in comments, but not in answers (and some of them are really weird!).
+
+You need to go to Control Panel → Credential Manager → Windows Credentials and update you password for git:http://your_repository_address
+
+Share
+Improve this answer
+Follow
+edited Dec 11, 2021 at 20:32
+Peter Mortensen's user avatar
+Peter Mortensen
+31.6k2222 gold badges109109 silver badges133133 bronze badges
+answered Jun 29, 2017 at 10:37
+amarax's user avatar
+amarax
+50855 silver badges1414 bronze badges
+Add a comment
+11
+
+In my case, I recently changed my windows password and I have SSH key configured for git related actions (pull, push, fetch etc.,), after I encountered the "fatal: Authentication failed" error, I updated my password in the windows credential manager (Control Panel\User Accounts\Credential Manager)for all items starting with git:..., and tried again, worked this time!
+
+Share
+Improve this answer
+Follow
+answered Mar 13, 2020 at 14:27
+Kiran Modini's user avatar
+Kiran Modini
+1,42211 gold badge1010 silver badges55 bronze badges
+Add a comment
+9
+
+I had the same problem. I set the URL in this way:
+
+git remote set-url origin https://github.com/zkirkland/Random-Python-Tests.git
+
+I also removed this entry from the configuration file: askpass = /bin/echo.
+
+Then "git push" asked me for username and password and this time it worked.
+
+Share
+Improve this answer
+Follow
+edited Dec 11, 2021 at 19:32
+Peter Mortensen's user avatar
+Peter Mortensen
+31.6k2222 gold badges109109 silver badges133133 bronze badges
+answered Nov 26, 2013 at 7:03
+Bartosz's user avatar
+Bartosz
+9322 silver badges55 bronze badges
+I didn't need to remove from config file this entry: askpass = /bin/echo. – 
+Darius Miliauskas
+ CommentedJul 2, 2015 at 21:32
+Add a comment
+8
+
+If you have enabled the two-factor authentication on your GitHub account, then sign in to your GitHub account and go to
+
+New personal access token
+
+to generate a new access token, copy that token, and paste as a password for authentication in the terminal.
+
+Share
+Improve this answer
+Follow
+edited Dec 11, 2021 at 20:59
+Peter Mortensen's user avatar
+Peter Mortensen
+31.6k2222 gold badges109109 silver badges133133 bronze badges
+answered May 10, 2018 at 16:33
+RegarBoy's user avatar
+RegarBoy
+3,52111 gold badge2424 silver badges4747 bronze badges
+Add a comment
+4
+
+I started experiencing this issue on Visual Studio Code in Ubuntu 20.04 yesterday.
+
+I did not make any changes to my GitHub credentials, neither did I change anything in the project, but I run any git command to communicate with my remote branch like:
+
+git pull origin dev
+I get the error below:
+
+remote: Repository not found. fatal: Authentication failed for 'https://github.com/MyUsername/my-project.git/'
+
+Here's what worked for me:
+
+I tried recloning the project and then running the git pull command but it did not work.
+
+git clone https://my-git-url
+I tried setting my credentials again using the below commands but still no luck:
+
+git config --global user.email "email@example.com"
+git config --global user.name "John King"
+I tried removing the remote repository and re-adding it using the below commands, but still no luck:
+
+git remote remove origin
+git remote add origin https://my-git-url
+Finally, I decided to try using my default Ubuntu terminal and it worked fine. My big guess is that it's a bug from Visual Studio Code from the last update that was made some few hours before then (See the screenshot that shows that a Release was done on the same day that I was having the issue). I mean I set up Visual Studio Code using snap, so probably it might have been updated in the background a few hours before then.
+
+enter image description here
+
+Hopefully, they will get it fixed and git remote operations will be fine again.
+
+Share
+Improve this answer
+Follow
+edited Nov 14, 2021 at 12:26
+answered Nov 13, 2021 at 10:15
+Promise Preston's user avatar
+Promise Preston
+28.6k1616 gold badges168168 silver badges165165 bronze badges
+1
+Having the same issues, VScode on ubuntu 20.04. Did you find a solution to make the integrated terminal to work? (I'm using bash) – 
+Thorvald
+ CommentedNov 14, 2021 at 11:50
+1
+Thanks, same issue here. Luckily I found your post right away – 
+Arjuna Deva
+ CommentedNov 15, 2021 at 9:27
+Add a comment
+4
+
+Just from your .config file change:
+
+url = http://www.github.com/###user###/Random-Python-Tests
+To:
+
+url = http://###user###@github.com/###user###/Random-Python-Tests
+Share
+Improve this answer
+Follow
+edited Dec 11, 2021 at 20:04
+Peter Mortensen's user avatar
+Peter Mortensen
+31.6k2222 gold badges109109 silver badges133133 bronze badges
+answered Jul 7, 2016 at 15:25
+ccamacho's user avatar
+ccamacho
+72988 silver badges2424 bronze badges
+Add a comment
+4
+
+The question was asked way before Two-Factor Authentication was introduced by GitHub, however, many people are encountering this error ever since GitHub introduced 2FA.
+
+GitHub asks for authentication every time you try to push, if you want to avoid getting prompted repeatedly, you should use github-cli which is very lightweight and you can install with apt, yum, dnf and pacman.
+
+after installing github-cli,
+
+Type this command
+gh auth login
+Select the account type to authenticate
+Select HTTPS or SSH (as desired)
+Login with a web browser or authenticate with access tokens as per your ease.
+Access tokens can be generated from GitHub > Settings > Developer-settings > Generate Access token, copy the token, and paste it into the terminal, It is a one-time code so ensure that you do not lose the code before authenticating it on the terminal
+
+Share
+Improve this answer
+Follow
+answered Jan 15, 2023 at 11:59
+Syed M Abbas Haider Taqvi's user avatar
+Syed M Abbas Haider Taqvi
+47344 silver badges1717 bronze badges
+1
+This worked for me and seems like the easiest solution in 2023. – 
+theisof
+ CommentedMay 2, 2023 at 8:19
+1
+This is by far the easiest solution. Thanks a bunch man, done upvoting your answer. – 
+Tsukimoto Mitsumasa
+ CommentedApr 10, 2024 at 12:17
+great solution, should be the accepted one! – 
+thias
+ CommentedNov 4, 2024 at 15:36
+Add a comment
+3
+
+Got the above error message when I updated my computer password. Reset my git credentials using the following steps:
+
+Go to Control Panel > User Accounts > Credential Manager > Windows Credentials. You will see Git credentials in the list (e.g. git:https://). Click on it, update the password, and execute git pull/push command from your Git bash and it won't throw any more error messages.
+
+Share
+Improve this answer
+Follow
+answered May 18, 2021 at 11:02
+Marilynn's user avatar
+Marilynn
+7155 bronze badges
+You're a lifesaver, I was just about to give up and send an email to Support when I saw this answer, since the same thing was happening to me (no clue why windows credentials didn't update automatically like the last time I had to change my computer password, but oh well). – 
+quantumferret
+ CommentedJul 9, 2021 at 8:52 
+Add a comment
+3
+
+If you are on Windows and trying to push to a Windows server which has domain users working as repository users (TFS), try getting into the TFS URL (i.e. http:\\tfs) with Internet Explorer. Enter your domain account credentials and let the page appear.
+
+Caution: Only use Internet Explorer! Other browsers won’t change your system credentials.
+
+Now go to Git Bash and change your remote user for the repository like below:
+
+git config user.name "domainName\userName"
+And done. Now you can push!
+
+Share
+Improve this answer
+Follow
+edited Dec 11, 2021 at 21:14
+Peter Mortensen's user avatar
+Peter Mortensen
+31.6k2222 gold badges109109 silver badges133133 bronze badges
+answered Jul 5, 2018 at 9:13
+AmiNadimi's user avatar
+AmiNadimi
+5,69544 gold badges4242 silver badges6161 bronze badges
+Add a comment
+3
+
+For me it worked in windows10+scoop+cmder by configuring the windows credential manager:
+
+git config credential.helper manager
+git push
+Share
+Improve this answer
+Follow
+answered May 20, 2024 at 10:35
+raisercostin's user avatar
+raisercostin
+9,17955 gold badges7373 silver badges7979 bronze badges
+Add a comment
+2
+
+I tried the token verification method and got it to work ~3 times and wasted around 2 hours of time for that. For some reason it does not work very well for our company.
+
+My solution was to change the authentication method from HTTPS to SSH. Here is a Github guide (https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
+
+After you have created the SSH key, remember to change the SSH address origin:
+
+git remote add origin git@github.com:user/repo.git
+Share
+Improve this answer
+Follow
+answered May 27, 2020 at 9:07
+jeppoo1's user avatar
+jeppoo1
+69811 gold badge1010 silver badges2626 bronze badges
+Add a comment
+2
+
+I was getting below error when trying to push to github remote
+
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+Solution SSH Keys were missing on github account
+
+Copy local public ssh keys from ~/.ssh directory
+
+Paste to Github > Settings > SSH and GPG Keys > New SSH Key
+
+Try ssh -T git@github.com This should output
+
+Hi xxxxx! You've successfully authenticated, but GitHub does not provide shell access.
+
+Share
+Improve this answer
+Follow
+answered Aug 12, 2021 at 9:34
+Alpesh Patil's user avatar
+Alpesh Patil
+1,9261919 silver badges1717 bronze badges
+What does option -T do in ssh? And why is it not listed here ssh.com/academy/ssh/command#ssh-command-line-options? – 
+Thiago Gouvea
+ CommentedOct 8, 2021 at 9:44
+The -T option will disable pseudo terminal allocation while connecting to a Git remote server over SSH. Git server will respond to SSH request having -T option. – 
+Alpesh Patil
+ CommentedOct 8, 2021 at 11:19
+Add a comment
+2
+
+For me, I forgot that I had changed the password on github.com, and my keychain for shell authentication never updated to that new password.
+
+Deleting everything Git from my keychain and then rerunning the Git request helped solve the issue, prompting me again for the new password.
+
+Share
+Improve this answer
+Follow
+edited Dec 11, 2021 at 20:07
+Peter Mortensen's user avatar
+Peter Mortensen
+31.6k2222 gold badges109109 silver badges133133 bronze badges
+answered Nov 5, 2016 at 17:22
+MMMdata's user avatar
+MMMdata
+85788 silver badges2020 bronze badges
+Add a comment
+2
+
+If you are using SSH and cloned with HTTPS, this will not work.
+
+Clone with SSH and then push and pulls should work as expected!
+
+Share
+Improve this answer
+Follow
+edited Dec 11, 2021 at 21:16
+Peter Mortensen's user avatar
+Peter Mortensen
+31.6k2222 gold badges109109 silver badges133133 bronze badges
+answered Aug 23, 2018 at 23:31
+GoldenWest's user avatar
+GoldenWest
+28122 gold badges44 silver badges1616 bronze badges
+Add a comment
+2
+
+the quick GUI way of doing is:
+
+Firstly generate an access token via create app access token.
+then goto sourceTree's Settings(placed under the close button of the Source tree)
+A prompt will appear named "Repository Settings".
+There add/edit your repository path with https://USER_NAME:ACCESS_TOKEN@bitbucket.org/REPO_NAME/PROJECT_NAME.git
+or for github account
+
+https://username:access-token@github.com/username/repo.git
+
+Here the only change to mention is adding the additional accessToken generated by the above shared create app access token link into existing path url.
+
+Share
+Improve this answer
+Follow
+answered Mar 23, 2022 at 10:19
+Muahmmad Tayyib's user avatar
+Muahmmad Tayyib
+72911 gold badge1212 silver badges2929 bronze badges
+In my case, I was using the password for DevOps login when Git request password after user has ben entered; I was wrong since I needed to enter password provided with the creation of Personal Access Token (PAT) - that password shows a warning that it must be copied, since won't be shown again -. In summary, provide Git credentials as user and pwd showed in that creation step. – 
+Chesare
+ CommentedMar 22, 2023 at 20:18
+Add a comment
+2
+
+In Sourcetree Go to Tools -> Options -> Authentication
+
+On Your Email Id click on Edit and click on Refresh OAuth Token.
+
+Share
+Improve this answer
+Follow
+answered Feb 24, 2023 at 6:56
+Deepali Maniyar's user avatar
+Deepali Maniyar
+14933 bronze badges
+Add a comment
+1
+2
+Next
+Highly active question. Earn 10 reputation (not counting the association bonus) in order to answer this question. The reputation requirement helps protect this question from spam and non-answer activity.
+Not the answer you're looking for? Browse other questions tagged gitauthenticationgithub or ask your own question.
+The Overflow Blog
+Generative AI is not going to build your engineering team for you
+Developers want more, more, more: the 2024 results from Stack Overflow’s...
+Featured on Meta
+The December 2024 Community Asks Sprint has been moved to March 2025 (and...
+Stack Overflow Jobs is expanding to more countries
+
+Report this ad
+
+Report this ad
+Linked
+-3
+Git push rejected due to authentication
+0
+Github SSH for Public Repository
+0
+Git different user per remote
+1020
+Remove credentials from Git
+601
+GitLab remote: HTTP Basic: Access denied and fatal Authentication
+430
+fatal: The current branch master has no upstream branch
+149
+git clone: Authentication failed for <URL>
+83
+Git push: Missing or invalid credentials. fatal: Authentication failed for 'https://github.com/username/repo.git'
+21
+Configure Git clients, like GitHub for Windows, to not ask for authentication
+30
+2FA give problems when pushing to GitHub
+See more linked questions
+Related
+75
+Error message 'Authentication failed on the git remote'
+5
+VS Code on Windows - git push results in Permission Denied (publickey)
+18
+VS Code gives me an ssh_askpass error when I try to push the changes to my Github repository using the integrated git
+57
+Git push from Visual Studio Code: "No anonymous write access. Authentication failed"
+0
+Github Login Issue with VS code
+12
+git push origin master Missing or invalid credentials
+83
+Git push: Missing or invalid credentials. fatal: Authentication failed for 'https://github.com/username/repo.git'
+4
+Vs-code keeps prompting me to authenticate on every git push
+35
+"fatal: Authentication failed for" when pushing to GitHub from Visual Studio Code (1.62.2)
+14
+VS Code: Pushing and pulling always ask for password
+Hot Network Questions
+In Maoz Tzur, who are the seed who drowned in the sea with Pharaoh's army (2nd stanza)
+What does set theory has to say about non-existent objects?
+Ceiling light emits a dim glow even when turned off
+Does Tolkien ever show or speak of orcs being literate?
+System of quadratic equations with three unknowns from Berkeley Math Tournament 2024
+Is it common practice to remove trusted certificate authorities (CA) located in untrusted countries?
+How do I vertically center the cells in specific columns of a table?
+Is online job converting crypto to cash a scam?
+Do Saturn rings behave like a small scale model of protoplanetary disk?
+Explanation for one of the signals on capacitive coupling in The Art of Electronics
+Normal ordering of passive linear optics
+What is the smallest size for a heavy stable galaxy?
+Why is the United Kingdom often considered a country, but the European Union isn't?
+LM5121 not working properly
+How can we keep each pair of contours and removing others?
+Schengen Visa - Purpose vs Length of Stay
+Why did they leave the Endurance outside the time dilation zone?
+What does the MUX(4P2T) in this diagram of DRAM reading process actually do? Does it toggle between the read and write modes?
+AI Research vs. Industry
+Happy 2025 to all!
+Can I compose classical works on a DAW?
+Is Instant Reload the only way to avoid provoking an attack of opportunity while reloading a projectile weapon?
+Correctly sum pixel values into bins of angle relative to center
+Do all International airports need to be certified by ICAO?
+ Question feed
+
+Stack Overflow
+Questions
+Help
+Chat
+Products
+Teams
+Advertising
+Talent
+Company
+About
+Press
+Work Here
+Legal
+Privacy Policy
+Terms of Service
+Contact Us
+Cookie Settings
+Cookie Policy
+Stack Exchange Network
+Technology
+Culture & recreation
+Life & arts
+Science
+Professional
+Business
+API
+Data
+Blog
+Facebook
+Twitter
+LinkedIn
+Instagram
+Site design / logo © 2025 Stack Exchange Inc; user contributions licensed under CC BY-SA . rev 2024.12.20.20747
+
+By clicking “Accept all cookies”, you agree Stack Exchange can store cookies on your device and disclose information in accordance with our Cookie Policy.
+Accept all cookies
+Necessary cookies only
+Customize settings
